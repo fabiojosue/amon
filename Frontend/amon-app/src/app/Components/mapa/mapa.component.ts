@@ -29,13 +29,6 @@ export class MapaComponent {
 
   ngOnInit() {
     this.initMap();
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-
-
-    }, 200);
   }
 
 }
