@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import * as L from 'leaflet';
-import { ReporteComponent } from '../reporte/reporte.component';
+import 'leaflet.heat';
 import * as bootstrap from 'bootstrap';
+import { Reporte } from '../../Modelo/Reporte.model';
+import 'leaflet.heat';
+
 
 @Component({
   selector: 'app-mapa',
@@ -13,7 +15,13 @@ export class MapaComponent implements OnInit {
   private map: any;
   private userMarker: any;
 
-  constructor(private router: Router) { }
+  private reportes: Reporte[] = [];
+
+  private fakeReportes: Reporte[] = [
+
+  ]
+
+  constructor() { }
 
   private initMap(): void {
     const bounds = L.latLngBounds([5.5, -87.1], [11.2, -82.6]);
@@ -29,6 +37,12 @@ export class MapaComponent implements OnInit {
 
     this.addReportButton();
     this.trackUserLocation();
+
+    const heatData: L.HeatLatLngTuple[] = [
+      [9.937656, -84.074862, 2],
+    ];
+
+    const heat = L.heatLayer(heatData, { radius: 100 }).addTo(this.map);
   }
 
   private addReportButton(): void {
