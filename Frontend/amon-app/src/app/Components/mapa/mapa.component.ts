@@ -36,7 +36,7 @@ export class MapaComponent implements OnInit {
     }).addTo(this.map);
 
     this.addReportButton();
-    this.trackUserLocation();
+    // this.trackUserLocation();
 
     const heatData: L.HeatLatLngTuple[] = [
       [9.937656, -84.074862, 2],
