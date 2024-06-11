@@ -1,6 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
 import { ServiceService } from '../../service/service.service';
+import Swal from 'sweetalert2';
 
 
 
@@ -12,18 +13,17 @@ import { ServiceService } from '../../service/service.service';
 export class ReporteComponent {
   private map: any;
   private marker: any;
-  sitekey= '6Lfo6_UpAAAAAPoj1JqqFeDfoB_jxxjA737wHe2y';
+  sitekey = '6Lfo6_UpAAAAAPoj1JqqFeDfoB_jxxjA737wHe2y';
   private latitude: string = '0';
   private longitude: string = '0';
   public types: any = this.getTypes();
   selectedTypeId: string = '';
 
-  public constructor(private service: ServiceService) {}
+  public constructor(private service: ServiceService) { }
 
 
 
   private initMap(): void {
-    console.log('initMap');
     if (!this.map) {
       const bounds = L.latLngBounds([5.5, -87.1], [11.2, -82.6]);
 
@@ -95,13 +95,98 @@ export class ReporteComponent {
     );
   }
 
-  createReport(){
+  createReport() {
     console.log(this.selectedTypeId);
+    console.log(this.latitude);
+    console.log(this.longitude);
+
+    if (this.selectedTypeId == '') {
+      this.showAlertWarningReport();
+      return;
+    }
+    if (this.latitude == '0' || this.longitude == '0') {
+      this.showAlertWarningLocation();
+      return;
+    }
+
+    const location = { 'latitude': this.latitude, 'longitude': this.longitude };
+    let locationId = '';
+
+    this.service.createLocation(location).subscribe({
+      next: (res: any) => {
+        locationId = res.id;
+        const report = { 'type': this.selectedTypeId, 'location': locationId, 'registerDate': new Date() };
+        this.service.createReport(report).subscribe({
+          next: (res: any) => {
+         
+            this.showAlertSuccess();
+          },
+          error: (err) => {
+            if (err.status == 409) {
+              this.showAlertError();
+            }
+            else {
+              alert('Error en el servidor');
+            }
+          }
+        });
+
+      },
+      error: (err) => {
+        if (err.status == 409) {
+          alert('Error al crear la ubicación');
+        }
+        else {
+          alert('Error en el servidor');
+        }
+      }
+
+
+
+    });
   }
-  // ngOnInit() {
-  //   console.log(this.types);
-    
-  // }
+
+  showAlertSuccess() {
+    Swal.fire({
+      title: 'Reporte creado',
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
+
+  }
+
+  showAlertError() {
+    Swal.fire({
+      title: 'Error al crear el reporte',
+      icon: 'error',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    });
+
+  }
+
+  showAlertWarningReport() {
+    Swal.fire({
+      title: 'Seleccione un tipo de reporte',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    });
+  }
+
+  showAlertWarningLocation() {
+    Swal.fire({
+      title: 'Seleccione una ubicación',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    });
+  }
 
 
 

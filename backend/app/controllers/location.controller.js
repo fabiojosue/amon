@@ -9,7 +9,7 @@ exports.createLocation = async (req, res) => {
 
         const location = new LocationModel(locationReq);
         await location.save();
-        res.send({message: "Location created successfully"});
+        res.send({message: "Location created successfully", id: location._id});
 
     }catch(err) {
         if(err.code === 11000) {
