@@ -10,6 +10,9 @@ export class ReporteComponent {
   private map: any;
   private marker: any;
   sitekey= '6Lfo6_UpAAAAAPoj1JqqFeDfoB_jxxjA737wHe2y';
+  private latitude: string = '0';
+  private longitude: string = '0';
+
 
   private initMap(): void {
     console.log('initMap');
@@ -35,10 +38,32 @@ export class ReporteComponent {
         this.map.removeLayer(this.marker);
       }
       this.marker = L.marker([lat, lng]).addTo(this.map);
+      this.latitude = lat.toString();
+      this.longitude = lng.toString();
 
 
     });
 
+  }
+
+  encontrarUbicacion() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const latitud = position.coords.latitude;
+        const longitud = position.coords.longitude;
+        this.map.setView([latitud, longitud], 15);
+        if (this.marker) {
+          this.map.removeLayer(this.marker);
+        }
+        this.marker = L.marker([latitud, longitud]).addTo(this.map);
+        this.latitude = latitud.toString();
+        this.longitude = longitud.toString();
+
+      });
+    }
+    else {
+      alert('No se pudo obtener la ubicación');
+    }
   }
   onModalShown() {
     this.initMap();
