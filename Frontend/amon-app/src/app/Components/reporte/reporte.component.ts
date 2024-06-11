@@ -18,6 +18,7 @@ export class ReporteComponent {
   private longitude: string = '0';
   public types: any = this.getTypes();
   selectedTypeId: string = '';
+  captchaisvalid: boolean = false;
 
   public constructor(private service: ServiceService) { }
 
@@ -95,10 +96,13 @@ export class ReporteComponent {
     );
   }
 
+  onCaptchaResolved(token: string) {
+    if(token){
+      this.captchaisvalid = true;
+    }
+  }
+
   createReport() {
-    console.log(this.selectedTypeId);
-    console.log(this.latitude);
-    console.log(this.longitude);
 
     if (this.selectedTypeId == '') {
       this.showAlertWarningReport();
@@ -106,6 +110,10 @@ export class ReporteComponent {
     }
     if (this.latitude == '0' || this.longitude == '0') {
       this.showAlertWarningLocation();
+      return;
+    }
+    if(!this.captchaisvalid){
+      alert('Complete el captcha');
       return;
     }
 
@@ -182,6 +190,15 @@ export class ReporteComponent {
   showAlertWarningLocation() {
     Swal.fire({
       title: 'Seleccione una ubicación',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    });
+  }
+
+  showAlertWarningCaptcha() {
+    Swal.fire({
+      title: 'Complete el captcha',
       icon: 'warning',
       confirmButtonText: 'Aceptar',
       confirmButtonColor: '#fb5607',
