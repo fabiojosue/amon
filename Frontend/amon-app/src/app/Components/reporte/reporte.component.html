@@ -12,11 +12,8 @@
 
           <div class="form-group">
             <label for="selectMenu" class="form-label">Seleccione una opción:</label>
-            <select class="form-select form-select-lg mb-3" id="selectMenu" aria-label="Default select example">
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+            <select [(ngModel)]="selectedTypeId" class="form-select form-select-lg mb-3" id="selectMenu" >
+              <option *ngFor="let type of types" [value]="type._id">{{type.name}}</option>
             </select>
           </div>
 
@@ -35,7 +32,7 @@
           </div>
 
           <div class="form-group mb-3">
-            <button class="btn btn-success btn-lg w-100">Enviar Denuncia</button>
+            <button class="btn btn-success btn-lg w-100" (click)="createReport()">Enviar Reporte</button>
           </div>
 
           <div class="alert alert-success" role="alert" style="display: none;">

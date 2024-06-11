@@ -7,6 +7,8 @@ import { MapaComponent } from './Components/mapa/mapa.component';
 import { ReporteComponent } from './Components/reporte/reporte.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
     BrowserModule,
     AppRoutingModule,
     RecaptchaModule,
-    RecaptchaFormsModule
+    RecaptchaFormsModule,
+    HttpClientModule,
+    FormsModule
   ],
   providers: [
     provideAnimationsAsync()

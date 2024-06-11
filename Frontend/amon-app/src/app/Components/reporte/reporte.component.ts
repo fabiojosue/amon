@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
+import { ServiceService } from '../../service/service.service';
+
+
 
 @Component({
   selector: 'app-reporte',
@@ -12,6 +15,11 @@ export class ReporteComponent {
   sitekey= '6Lfo6_UpAAAAAPoj1JqqFeDfoB_jxxjA737wHe2y';
   private latitude: string = '0';
   private longitude: string = '0';
+  public types: any = this.getTypes();
+  selectedTypeId: string = '';
+
+  public constructor(private service: ServiceService) {}
+
 
 
   private initMap(): void {
@@ -76,8 +84,25 @@ export class ReporteComponent {
     }, 200);
   }
 
+  getTypes() {
+    this.service.getTypes().subscribe(
+      (res: any) => {
+        this.types = res.types;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  createReport(){
+    console.log(this.selectedTypeId);
+  }
   // ngOnInit() {
-  //   this.onModalShown();
+  //   console.log(this.types);
+    
   // }
+
+
 
 }
