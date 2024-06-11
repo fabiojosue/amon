@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.heat';
 import * as bootstrap from 'bootstrap';
-import { Reporte } from '../../Modelo/Reporte.model';
+import { Report } from '../../Modelo/Report/Report.model';
 import 'leaflet.heat';
 
 
@@ -15,9 +15,9 @@ export class MapaComponent implements OnInit {
   private map: any;
   private userMarker: any;
 
-  private reportes: Reporte[] = [];
+  private reportes: Report[] = [];
 
-  private fakeReportes: Reporte[] = [
+  private fakeReportes: Report[] = [
 
   ]
 
