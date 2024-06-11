@@ -1,4 +1,36 @@
-<div>
-    <h1>Reporte</h1>
+<div class="container mt-5" style="max-width: 1000mm;">
+    <h2 class="text-center mb-4">Crear Denuncia</h2>
 
+    <div class="form-group">
+      <label for="selectMenu" class="form-label">Seleccione una opción:</label>
+      <select class="form-select form-select-lg mb-3" id="selectMenu" aria-label="Default select example">
+        <option selected>Open this select menu</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <button class="btn btn-primary btn-lg w-100">Ubicarse en el mapa</button>
+    </div>
+
+    <div class="form-group">
+      <label for="map" class="form-label">Seleccione la ubicación:</label>
+      <div id="mapid" style="height: 400px; border: 1px solid #ddd; border-radius: 8px;"></div>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" value="" id="notRobotCheck">
+        <label class="form-check-label" for="notRobotCheck">
+          No soy un robot
+        </label>
+    </div>
+
+    <div class="form-group mb-3">
+        <button class="btn btn-success btn-lg w-100">Enviar Denuncia</button>
+    </div>
+
+    <div class="alert alert-success" role="alert" style="display: none;">
+    </div>
 </div>
