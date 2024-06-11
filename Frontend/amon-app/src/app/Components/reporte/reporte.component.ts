@@ -94,15 +94,21 @@ export class ReporteComponent {
       }
     );
   }
-
-  createReport(){
+  
+  createReport() {
+    const errorMessage = document.getElementById('errorMessage');
+    if (this.selectedTypeId === '') {
+        if (errorMessage) {
+            errorMessage.style.display = 'block';
+        }
+        return;
+    }
+    if (errorMessage) {
+        errorMessage.style.display = 'none';
+    }
     console.log(this.selectedTypeId);
-  }
-  // ngOnInit() {
-  //   console.log(this.types);
-    
-  // }
-
+    // código para enviar el reporte
+}
 
 
 }
