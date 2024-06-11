@@ -9,8 +9,10 @@ import * as L from 'leaflet';
 export class ReporteComponent {
   private map: any;
   private marker: any;
-  private initMap(): void {
+  sitekey= '6Lfo6_UpAAAAAPoj1JqqFeDfoB_jxxjA737wHe2y';
 
+  private initMap(): void {
+    console.log('initMap');
     if (!this.map) {
       const bounds = L.latLngBounds([5.5, -87.1], [11.2, -82.6]);
 
@@ -36,7 +38,7 @@ export class ReporteComponent {
 
 
     });
-    
+
   }
   onModalShown() {
     this.initMap();
@@ -48,5 +50,9 @@ export class ReporteComponent {
 
     }, 200);
   }
+
+  // ngOnInit() {
+  //   this.onModalShown();
+  // }
 
 }

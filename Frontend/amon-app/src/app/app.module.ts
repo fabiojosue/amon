@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { MapaComponent } from './Components/mapa/mapa.component';
 import { ReporteComponent } from './Components/reporte/reporte.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    RecaptchaModule,
+    RecaptchaFormsModule
   ],
   providers: [
     provideAnimationsAsync()

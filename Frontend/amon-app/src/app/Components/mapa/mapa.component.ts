@@ -5,6 +5,8 @@ import * as bootstrap from 'bootstrap';
 import { Report } from '../../Modelo/Report/Report.model';
 import 'leaflet.heat';
 
+// import { ServiceService } from '../../service/service.service';
+
 
 @Component({
   selector: 'app-mapa',
@@ -12,10 +14,12 @@ import 'leaflet.heat';
   styleUrls: ['./mapa.component.scss']
 })
 export class MapaComponent implements OnInit {
+
+
   private map: any;
   private userMarker: any;
 
-  private reportes: Report[] = [];
+  private reports: Report[] = [];
 
   private fakeReportes: Report[] = [
 
@@ -90,7 +94,21 @@ export class MapaComponent implements OnInit {
     }
   }
 
+  // private initReports(): void {
+  //   this.service.getReports().subscribe((reports: Report[]) => {
+  //     this.reports = reports;
+
+  //     console.log(this.reports);
+  //     // this.reports.forEach((report) => {
+  //     //   const marker = L.marker([report.location.latitude, report.location.longitude]);
+  //     //   marker.bindPopup(`<b>${report.type.name}</b><br>${report.registerDate}`);
+  //     //   marker.addTo(this.map);
+  //     // });
+  //   });
+  // }
+
   ngOnInit() {
+    // this.initReports();
     this.initMap();
   }
 }
