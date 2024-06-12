@@ -19,6 +19,9 @@ export class ReporteComponent {
   public types: any = this.getTypes();
   selectedTypeId: string = '';
   captchaisvalid: boolean = false;
+  private polygon: any;
+
+
 
   public constructor(private service: ServiceService) { }
 
@@ -26,22 +29,42 @@ export class ReporteComponent {
 
   private initMap(): void {
     if (!this.map) {
-      const bounds = L.latLngBounds([5.5, -87.1], [11.2, -82.6]);
 
       this.map = L.map('mapid', {
-        center: [9.9634, -84.1003],
-        zoom: 8,
+        center: [9.937266, -84.072582],
+        zoom: 15,
 
       });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        minZoom: 3
+        minZoom: 13
       }).addTo(this.map);
     }
-    this.map.on('click', (e: any) => {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
 
+    const polygonCoords: L.LatLngExpression[] = [
+      [9.940182, -84.078527], // Ejemplo de coordenadas
+      [9.934925, -84.079071], // Sustituye con las coordenadas reales
+      [9.934328, -84.067754],
+      [9.939231, -84.066123],
+      // [9.9368, -84.0870]
+    ]
+
+    this.polygon = L.polygon(polygonCoords, {
+      color: 'blue',
+      fillColor: '#3388ff',
+      fillOpacity: 0.5
+
+    }).addTo(this.map);
+
+    this.map.on('click', this.onMapClick, this);
+
+  }
+
+  private onMapClick(e: any): void {
+    const { lat, lng } = e.latlng;
+    const point = L.latLng(lat, lng);
+
+    if (this.polygon.getBounds().contains(point)) {
 
       if (this.marker) {
         this.map.removeLayer(this.marker);
@@ -49,10 +72,10 @@ export class ReporteComponent {
       this.marker = L.marker([lat, lng]).addTo(this.map);
       this.latitude = lat.toString();
       this.longitude = lng.toString();
-
-
-    });
-
+    }
+    else {
+      this.showAlertWarningPolygon();
+    }
   }
 
   encontrarUbicacion() {
@@ -60,13 +83,21 @@ export class ReporteComponent {
       navigator.geolocation.getCurrentPosition((position) => {
         const latitud = position.coords.latitude;
         const longitud = position.coords.longitude;
-        this.map.setView([latitud, longitud], 15);
-        if (this.marker) {
-          this.map.removeLayer(this.marker);
+
+        if (this.polygon.getBounds().contains(L.latLng(latitud, longitud))) {
+          if (this.marker) {
+            this.map.removeLayer(this.marker);
+          }
+          this.marker = L.marker([latitud, longitud]).addTo(this.map);
+          this.latitude = latitud.toString();
+          this.longitude = longitud.toString();
         }
-        this.marker = L.marker([latitud, longitud]).addTo(this.map);
-        this.latitude = latitud.toString();
-        this.longitude = longitud.toString();
+        else {
+          this.showAlertWarningPolygon();
+          return;
+        }
+        this.map.setView([latitud, longitud], 15);
+
 
       });
     }
@@ -96,8 +127,9 @@ export class ReporteComponent {
     );
   }
 
-  onCaptchaResolved(token: string) {
-    if(token){
+  onCaptchaResolved(token: string | null
+  ):void {
+    if (token) {
       this.captchaisvalid = true;
     }
   }
@@ -112,8 +144,8 @@ export class ReporteComponent {
       this.showAlertWarningLocation();
       return;
     }
-    if(!this.captchaisvalid){
-      alert('Complete el captcha');
+    if (!this.captchaisvalid) {
+      this.showAlertWarningCaptcha();
       return;
     }
 
@@ -126,7 +158,7 @@ export class ReporteComponent {
         const report = { 'type': this.selectedTypeId, 'location': locationId, 'registerDate': new Date() };
         this.service.createReport(report).subscribe({
           next: (res: any) => {
-         
+
             this.showAlertSuccess();
           },
           error: (err) => {
@@ -199,6 +231,15 @@ export class ReporteComponent {
   showAlertWarningCaptcha() {
     Swal.fire({
       title: 'Complete el captcha',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#fb5607',
+    });
+  }
+
+  showAlertWarningPolygon() {
+    Swal.fire({
+      title: 'Ubicación fuera del polígono',
       icon: 'warning',
       confirmButtonText: 'Aceptar',
       confirmButtonColor: '#fb5607',
