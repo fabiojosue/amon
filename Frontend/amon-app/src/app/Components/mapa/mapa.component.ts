@@ -5,8 +5,13 @@ import * as bootstrap from 'bootstrap';
 import { Report } from '../../Modelo/Report/Report.model';
 import 'leaflet.heat';
 
-// import { ServiceService } from '../../service/service.service';
+import { ServiceService } from '../../service/service.service';
 
+interface Reporte {
+  lat: number;
+  lng: number;
+  puntaje: number;
+}
 
 @Component({
   selector: 'app-mapa',
@@ -19,20 +24,22 @@ export class MapaComponent implements OnInit {
   private map: any;
   private userMarker: any;
 
-  private reports: Report[] = [];
+  private reports: any[] = [];
+  private locations: any[] = [];
+  private types: any[] = [];
 
-  private fakeReportes: Report[] = [
+  private reportesObj: Reporte[] = [];
 
-  ]
+  private heatLayer: any;
 
-  constructor() { }
+  constructor(public service:ServiceService) { }
+
 
   private initMap(): void {
-    const bounds = L.latLngBounds([5.5, -87.1], [11.2, -82.6]);
 
     this.map = L.map('map', {
       center: [9.937794, -84.075628],
-      zoom: 9,
+      zoom: 15,
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -40,13 +47,23 @@ export class MapaComponent implements OnInit {
     }).addTo(this.map);
 
     this.addReportButton();
-    // this.trackUserLocation();
 
-    const heatData: L.HeatLatLngTuple[] = [
-      [9.937656, -84.074862, 2],
-    ];
+    // const heat = L.heatLayer(heatData, { radius: 100 }).addTo(this.map);
+    this.addHeatLayer();
+  }
 
-    const heat = L.heatLayer(heatData, { radius: 100 }).addTo(this.map);
+  private addHeatLayer(): void {
+      console.log(this.reportesObj);
+      const heatData = this.reportesObj.map((reporte) => [reporte.lat, reporte.lng, reporte.puntaje]);
+
+      if(this.heatLayer) this.map.removeLayer(this.heatLayer);
+  
+      this.heatLayer = L.heatLayer(heatData as [L.LatLng | L.HeatLatLngTuple],{
+        radius:35,
+        blur:25,
+        maxZoom: 17,
+        gradient: { 0.4: 'blue', 0.6: 'lime', 0.8: 'red' }
+      }).addTo(this.map);
   }
 
   private addReportButton(): void {
@@ -78,38 +95,43 @@ export class MapaComponent implements OnInit {
     this.map.addControl(new btnReport());
   }
 
-  private trackUserLocation(): void {
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition((position) => {
-        const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
-        if (this.userMarker) {
-          this.userMarker.setLatLng(latlng);
-        } else {
-          this.userMarker = L.marker(latlng).addTo(this.map);
+
+
+  private async initReports(): Promise<void> {
+    // Convertir las suscripciones en promesas
+    const typesPromise = this.service.getTypes().toPromise();
+    const locationsPromise = this.service.getLocations().toPromise();
+    const reportsPromise = this.service.getReports().toPromise();
+
+    // Esperar a que todas las promesas se resuelvan
+    const [types, locations, reports] = await Promise.all([typesPromise, locationsPromise, reportsPromise]);
+    this.types = types.types;
+    this.locations = locations.locations;
+  
+   
+    this.reports = reports.reports;
+    for (let report of this.reports) {
+      let r: Reporte = { lat: 0, lng: 0, puntaje: report.type };
+      for (let location of this.locations) {
+        if (report.location == location._id) {
+          r.lat = +location.latitude;
+          r.lng = +location.longitude;
         }
-        this.map.setView(latlng);
-      });
-    } else {
-      alert("Geolocation is not supported by this browser.");
+      }
+      for (let type of this.types) {
+        if (report.type == type._id) {
+          r.puntaje = +type.weight;
+        }
+      }
+      this.reportesObj.push(r);
     }
   }
 
-  // private initReports(): void {
-  //   this.service.getReports().subscribe((reports: Report[]) => {
-  //     this.reports = reports;
-
-  //     console.log(this.reports);
-  //     // this.reports.forEach((report) => {
-  //     //   const marker = L.marker([report.location.latitude, report.location.longitude]);
-  //     //   marker.bindPopup(`<b>${report.type.name}</b><br>${report.registerDate}`);
-  //     //   marker.addTo(this.map);
-  //     // });
-  //   });
-  // }
-
   ngOnInit() {
-    // this.initReports();
-    this.initMap();
+    this.initReports().then(() => {
+      this.initMap();
+    });
+ 
   }
 }
 

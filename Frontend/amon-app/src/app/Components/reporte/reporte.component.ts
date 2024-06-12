@@ -52,7 +52,7 @@ export class ReporteComponent {
     this.polygon = L.polygon(polygonCoords, {
       color: 'blue',
       fillColor: '#3388ff',
-      fillOpacity: 0.5
+      fillOpacity: 0.35
 
     }).addTo(this.map);
 
@@ -160,6 +160,7 @@ export class ReporteComponent {
           next: (res: any) => {
 
             this.showAlertSuccess();
+       
           },
           error: (err) => {
             if (err.status == 409) {
@@ -244,6 +245,16 @@ export class ReporteComponent {
       confirmButtonText: 'Aceptar',
       confirmButtonColor: '#fb5607',
     });
+  }
+
+  removeInfo(){
+    this.latitude = '0';
+    this.longitude = '0';
+    this.selectedTypeId = '';
+    this.captchaisvalid = false;
+    if (this.marker) {
+      this.map.removeLayer(this.marker);
+    }
   }
 
 
