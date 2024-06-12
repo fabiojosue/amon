@@ -98,32 +98,36 @@ export class MapaComponent implements OnInit {
 
 
   private async initReports(): Promise<void> {
-    // Convertir las suscripciones en promesas
     const typesPromise = this.service.getTypes().toPromise();
     const locationsPromise = this.service.getLocations().toPromise();
     const reportsPromise = this.service.getReports().toPromise();
-
+  
     // Esperar a que todas las promesas se resuelvan
     const [types, locations, reports] = await Promise.all([typesPromise, locationsPromise, reportsPromise]);
     this.types = types.types;
     this.locations = locations.locations;
   
-   
     this.reports = reports.reports;
+    const fechaLimite = new Date();
+    fechaLimite.setDate(fechaLimite.getDate() - 7);
+  
     for (let report of this.reports) {
-      let r: Reporte = { lat: 0, lng: 0, puntaje: report.type };
-      for (let location of this.locations) {
-        if (report.location == location._id) {
-          r.lat = +location.latitude;
-          r.lng = +location.longitude;
+      const fechaRegistro = new Date(report.registerDate);
+      if (fechaRegistro >= fechaLimite) { // Solo mostrar los reportes de la última semana
+        let r: Reporte = { lat: 0, lng: 0, puntaje: report.type };
+        for (let location of this.locations) {
+          if (report.location == location._id) {
+            r.lat = +location.latitude;
+            r.lng = +location.longitude;
+          }
         }
-      }
-      for (let type of this.types) {
-        if (report.type == type._id) {
-          r.puntaje = +type.weight;
+        for (let type of this.types) {
+          if (report.type == type._id) {
+            r.puntaje = +type.weight;
+          }
         }
+        this.reportesObj.push(r);
       }
-      this.reportesObj.push(r);
     }
   }
 
